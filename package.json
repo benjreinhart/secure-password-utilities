@@ -1,0 +1,44 @@
+{
+  "name": "secure-password-utilities",
+  "version": "0.0.1",
+  "description": "Zero-dependency utilities for generating secure password and pins",
+  "keywords": [
+    "password",
+    "pin",
+    "secure",
+    "symbols",
+    "alphanumeric",
+    "numeric",
+    "uppercase",
+    "lowercase",
+    "character",
+    "threshold",
+    "strength",
+    "safe"
+  ],
+  "scripts": {
+    "build": "tsc -d",
+    "clean": "rm -rf lib",
+    "lint": "prettier --check 'src/**/*.ts' 'test/*.ts'",
+    "test": "jest --testMatch \"**/test/**/*.test.ts\""
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib/**/*",
+    "LICENSE",
+    "README.md"
+  ],
+  "author": "Ben Reinhart (https://benreinhart.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/benjreinhart/secure-password-utilities"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "prettier": "^2.8.4",
+    "ts-jest": "^29.0.5",
+    "typescript": "^4.9.5"
+  }
+}
