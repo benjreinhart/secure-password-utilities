@@ -51,6 +51,10 @@ type PasswordOptionsType = {
 Examples:
 
 ```ts
+// Contains only letters (upper and lowercase) and digits.
+const alphanumericPassword = generatePassword({ length: 10, symbols: false});
+console.log(alphanumericPassword); // 49Faqzd8jx
+
 const password = generatePassword({
   symbols: 2,               // Resulting password must contain exactly two symbols.
   uppercase: { min: 1 },    // Resulting password must contain a minimum of 1 upperase character.
