@@ -1,5 +1,6 @@
 import {
   generatePassword,
+  generatePin,
   DIGIT_CHARSET,
   SYMBOL_CHARSET,
   LOWERCASE_CHARSET,
@@ -336,6 +337,24 @@ describe('secure-password-utilities', () => {
         expect(containsAtLeast(password, DIGIT_CHARSET.split(''), 2)).toBeTruthy();
         expect(containsExact(password, SYMBOL_CHARSET.split(''), 2)).toBeTruthy();
         expect(containsAtLeast(password, UPPERCASE_CHARSET.split(''), 1)).toBeTruthy();
+      }
+    });
+  });
+
+  describe('generatePin', () => {
+    it('rejects invalid length property', () => {
+      expect(() => generatePin(-1)).toThrowError(
+        'Invalid option: length option must be at least 1'
+      );
+
+      expect(() => generatePin(0)).toThrowError('Invalid option: length option must be at least 1');
+    });
+
+    it('can generate a random pin', () => {
+      for (let i = 4; i <= 12; i++) {
+        const pin = generatePin(i);
+        expect(pin).toHaveLength(i);
+        expect(pin).toMatch(/^\d+$/);
       }
     });
   });

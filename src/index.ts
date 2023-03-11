@@ -29,6 +29,13 @@ export type PasswordOptionsType = {
 /**
  * Generate a random password.
  *
+ * Examples:
+ *
+ *     generatePassword(); // l[Nz8UfU.o4g
+ *     generatePassword({ length: 8 }); // i&n4Htp=
+ *     generatePassword({ length: 8, symbols: false, digits: 2 }); // k9WTkaP6
+ *     generatePassword({ length: 8, digits: {min: 2} }); // 0(c69+.f
+ *
  * @param options
  * @param options.length The length of the resulting password. Defaults to 12.
  * @param options.digits Include or exclude digits.
@@ -55,6 +62,25 @@ export function generatePassword(options?: Partial<PasswordOptionsType>): string
     lowercase: options.lowercase === undefined ? defaults.lowercase : options.lowercase,
     uppercase: options.uppercase === undefined ? defaults.uppercase : options.uppercase,
   });
+}
+
+/**
+ * Generate a random digit pin.
+ *
+ * Examples:
+ *
+ *     generatePin(6); // 036919
+ *     generatePin(8); // 45958396
+ *
+ * @param length The length of the resulting pin.
+ * @returns A random digit pin.
+ */
+export function generatePin(length: number) {
+  if (typeof length !== 'number' || length < 1) {
+    throw new Error('Invalid option: length option must be at least 1');
+  }
+
+  return getRandomCharacters(length, DIGIT_CHARSET);
 }
 
 function createPassword(options: PasswordOptionsType) {
