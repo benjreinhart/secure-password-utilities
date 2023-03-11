@@ -1,7 +1,7 @@
 {
   "name": "secure-password-utilities",
   "version": "0.0.1",
-  "description": "Zero-dependency utilities for generating secure password and pins",
+  "description": "Zero-dependency utilities for generating secure passwords and pins",
   "keywords": [
     "password",
     "pin",
@@ -14,7 +14,9 @@
     "character",
     "threshold",
     "strength",
-    "safe"
+    "safe",
+    "node",
+    "browser"
   ],
   "scripts": {
     "build": "tsc -d",

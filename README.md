@@ -1,6 +1,6 @@
 # secure-password-utilities
 
-Zero-dependency utilities for generating secure password and pins.
+Zero-dependency utilities for generating secure passwords and pins.
 
 ## Usage
 
