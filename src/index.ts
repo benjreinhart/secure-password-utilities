@@ -29,7 +29,7 @@ export type PasswordOptionsType = {
 /**
  * Generate a random password.
  *
- * Examples:
+ * Uses a CSPRNG for randomness.
  *
  *     generatePassword(); // l[Nz8UfU.o4g
  *     generatePassword({ length: 8 }); // i&n4Htp=
@@ -64,25 +64,6 @@ export function generatePassword(options?: Partial<PasswordOptionsType>): string
   });
 }
 
-/**
- * Generate a random digit pin.
- *
- * Examples:
- *
- *     generatePin(6); // 036919
- *     generatePin(8); // 45958396
- *
- * @param length The length of the resulting pin.
- * @returns A random digit pin.
- */
-export function generatePin(length: number) {
-  if (typeof length !== 'number' || length < 1) {
-    throw new Error('Invalid option: length option must be at least 1');
-  }
-
-  return getRandomCharacters(length, DIGIT_CHARSET);
-}
-
 function createPassword(options: PasswordOptionsType) {
   validatePasswordOptions(options);
 
@@ -96,10 +77,10 @@ function createPassword(options: PasswordOptionsType) {
   // Construct the initial response based on the exact or minimum characters
   // specified for digits, symbols, lowercase and uppercase character sets.
   let result =
-    getRandomCharacters(initDigitLength!, DIGIT_CHARSET) +
-    getRandomCharacters(initSymbolLength!, SYMBOL_CHARSET) +
-    getRandomCharacters(initLowercaseLength!, LOWERCASE_CHARSET) +
-    getRandomCharacters(initUppercaseLength!, UPPERCASE_CHARSET);
+    generateCharacters(initDigitLength!, DIGIT_CHARSET) +
+    generateCharacters(initSymbolLength!, SYMBOL_CHARSET) +
+    generateCharacters(initLowercaseLength!, LOWERCASE_CHARSET) +
+    generateCharacters(initUppercaseLength!, UPPERCASE_CHARSET);
 
   let remainingCharset = '';
 
@@ -119,16 +100,16 @@ function createPassword(options: PasswordOptionsType) {
     remainingCharset += UPPERCASE_CHARSET;
   }
 
-  result += getRandomCharacters(passwordLength - result.length, remainingCharset);
+  result += generateCharacters(passwordLength - result.length, remainingCharset);
 
-  return shuffle(result);
+  return randomizeCharacters(result);
 }
 
 function validatePasswordOptions(options: PasswordOptionsType) {
   const { length } = options;
 
   if (typeof length !== 'number' || length < 1) {
-    throw new Error('Invalid option: length option must be at least 1');
+    throw new Error('Invalid option: length option must be a number greater than or equal to 1');
   }
 
   const [initDigitLength, moreDigits] = getLengthForOption(options.digits);
@@ -180,26 +161,74 @@ function getLengthForOption(option: PasswordOptionType): [number?, boolean?] {
 }
 
 /**
- * Get `length` random characters from a character set (`charset`) using a CSPRNG.
+ * Generate a random digit pin.
  *
- *     getRandomCharacters(6, '0123456789');                    // e.g.: "947682"
- *     getRandomCharacters(6, 'abcdefghijklmnopqrstuvwxyz');    // e.g.: "ihdrnn"
+ * Uses a CSPRNG for randomness.
  *
- * @private
+ *     generatePin(6); // 036919
+ *     generatePin(8); // 45958396
+ *
+ * @param length The length of the resulting pin.
+ * @returns A random digit pin.
  */
-function getRandomCharacters(length: number, charset: string) {
+export function generatePin(length: number) {
+  if (typeof length !== 'number' || length < 1) {
+    throw new Error(
+      'Invalid argument: length argument must be a number greater than or equal to 1'
+    );
+  }
+
+  return generateCharacters(length, DIGIT_CHARSET);
+}
+
+/**
+ * Generate a string of `length` characters chosen randomly from the given `charset`.
+ *
+ * Uses a CSPRNG for randomness.
+ *
+ *     generateCharacters(4, '$%^&');                          // &$&^
+ *     generateCharacters(6, '0123456789');                    // 947682
+ *     generateCharacters(6, 'abcdefghijklmnopqrstuvwxyz');    // ihdrnn
+ *
+ * @param length The number of random characters to generate.
+ * @param charset The set of characters to randomly sample from.
+ * @returns A random string of `length` characters from `charset`.
+ */
+export function generateCharacters(length: number, charset: string) {
+  if (typeof length !== 'number' || length < 0) {
+    throw new Error(
+      'Invalid argument: length argument must be a number greater than or equal to 0'
+    );
+  }
+
+  if (typeof charset !== 'string' || charset.length < 2) {
+    throw new Error(
+      'Invalid argument: charset argument must be a string with length greater than or equal to 2'
+    );
+  }
+
   return getRandomValues(length, charset.length).reduce((characters, i) => {
     return characters + charset[i];
   }, '');
 }
 
 /**
- * Take a string of characters and "shuffle" it (randomize it) using
- * random indices from a CSPRNG.
+ * Randomize the ordering of the characters in the given string.
  *
- * @private
+ * Uses a CSPRNG for randomness.
+ *
+ *     randomizeCharacters('randomize me');     // e znmaedimro
+ *     randomizeCharacters('randomize me');     // arndimz moee
+ *     randomizeCharacters('randomize me');     // ai emdonmrze
+ *
+ * @param characters A string of characters to randomize.
+ * @returns A random ordering of the `characters` argument.
  */
-function shuffle(characters: string) {
+export function randomizeCharacters(characters: string) {
+  if (typeof characters !== 'string') {
+    throw new Error('Invalid argument: characters argument must be a string');
+  }
+
   const charactersLength = characters.length;
 
   // Get random values within the index range of our input characters.

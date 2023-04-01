@@ -5,6 +5,8 @@ import {
   SYMBOL_CHARSET,
   LOWERCASE_CHARSET,
   UPPERCASE_CHARSET,
+  generateCharacters,
+  randomizeCharacters,
 } from '../src';
 
 // TODO: Can we handle this better?
@@ -57,11 +59,16 @@ describe('secure-password-utilities', () => {
   describe('generatePassword', () => {
     it('rejects invalid length property', () => {
       expect(() => generatePassword({ length: -1 })).toThrowError(
-        'Invalid option: length option must be at least 1'
+        'Invalid option: length option must be a number greater than or equal to 1'
       );
 
       expect(() => generatePassword({ length: 0 })).toThrowError(
-        'Invalid option: length option must be at least 1'
+        'Invalid option: length option must be a number greater than or equal to 1'
+      );
+
+      // @ts-ignore
+      expect(() => generatePassword({ length: '3' })).toThrowError(
+        'Invalid option: length option must be a number greater than or equal to 1'
       );
     });
 
@@ -342,12 +349,19 @@ describe('secure-password-utilities', () => {
   });
 
   describe('generatePin', () => {
-    it('rejects invalid length property', () => {
+    it('rejects invalid length argument', () => {
       expect(() => generatePin(-1)).toThrowError(
-        'Invalid option: length option must be at least 1'
+        'Invalid argument: length argument must be a number greater than or equal to 1'
       );
 
-      expect(() => generatePin(0)).toThrowError('Invalid option: length option must be at least 1');
+      expect(() => generatePin(0)).toThrowError(
+        'Invalid argument: length argument must be a number greater than or equal to 1'
+      );
+
+      // @ts-ignore
+      expect(() => generatePin('5')).toThrowError(
+        'Invalid argument: length argument must be a number greater than or equal to 1'
+      );
     });
 
     it('can generate a random pin', () => {
@@ -355,6 +369,77 @@ describe('secure-password-utilities', () => {
         const pin = generatePin(i);
         expect(pin).toHaveLength(i);
         expect(pin).toMatch(/^\d+$/);
+      }
+    });
+  });
+
+  describe('generateCharacters', () => {
+    it('rejects invalid length argument', () => {
+      expect(() => generateCharacters(-1, 'abcdef')).toThrowError(
+        'Invalid argument: length argument must be a number greater than or equal to 0'
+      );
+
+      // @ts-ignore
+      expect(() => generateCharacters('0', 'abcdef')).toThrowError(
+        'Invalid argument: length argument must be a number greater than or equal to 0'
+      );
+    });
+
+    it('rejects invalid charset argument', () => {
+      // @ts-ignore
+      expect(() => generateCharacters(5, ['a', 'b'])).toThrowError(
+        'Invalid argument: charset argument must be a string with length greater than or equal to 2'
+      );
+
+      // @ts-ignore
+      expect(() => generateCharacters(5, 'a')).toThrowError(
+        'Invalid argument: charset argument must be a string with length greater than or equal to 2'
+      );
+    });
+
+    it('can generate a string of random characters from charset argument', () => {
+      for (let i = 4; i <= 12; i++) {
+        const str = generateCharacters(i, 'abcdef');
+        expect(str).toHaveLength(i);
+        expect(str).toMatch(/^[abcdef]+$/);
+      }
+
+      for (let i = 4; i <= 12; i++) {
+        const str = generateCharacters(i, '&1#@45;BC');
+        expect(str).toHaveLength(i);
+        expect(str).toMatch(/^[&1#@45;BC]+$/);
+      }
+    });
+  });
+
+  describe('randomizeCharacters', () => {
+    it('rejects invalid argument', () => {
+      // @ts-ignore
+      expect(() => randomizeCharacters(10)).toThrowError(
+        'Invalid argument: characters argument must be a string'
+      );
+    });
+
+    it('can randomize a string of characters', () => {
+      const originalString = 'A string to randomize';
+
+      const charCounts: { [char: string]: number } = {};
+      for (const char of originalString) {
+        charCounts[char] = (charCounts[char] || 0) + 1;
+      }
+
+      for (let i = 0; i < 5; i++) {
+        const randomizedString = randomizeCharacters(originalString);
+        expect(randomizedString).toHaveLength(originalString.length);
+
+        // Ensure the same characters from original string are present the same number of times.
+        for (const [char, expectedCharCount] of Object.entries(charCounts)) {
+          const actualCharCount = Array.from(randomizedString).reduce(
+            (count, c) => count + Number(char === c),
+            0
+          );
+          expect(actualCharCount).toEqual(expectedCharCount);
+        }
       }
     });
   });

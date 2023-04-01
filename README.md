@@ -28,6 +28,8 @@ console.log(pin); // 036919
 
 Generates a random password.
 
+Uses a CSPRNG for randomness.
+
 `PasswordOptionsType` is defined as:
 
 ```ts
@@ -52,7 +54,7 @@ Examples:
 
 ```ts
 // Contains only letters (upper and lowercase) and digits.
-const alphanumericPassword = generatePassword({ length: 10, symbols: false});
+const alphanumericPassword = generatePassword({ length: 10, symbols: false });
 console.log(alphanumericPassword); // 49Faqzd8jx
 
 const password = generatePassword({
@@ -74,11 +76,35 @@ console.log(uppercasePassword); // IHDPPZRNPS
 
 Generate a random digit pin.
 
-Examples:
+Uses a CSPRNG for randomness.
 
 ```ts
 generatePin(6); // 036919
 generatePin(8); // 45958396
+```
+
+#### `generateCharacters(length: number, charset: string): string`
+
+Generate a string of `length` characters chosen randomly from the given `charset`.
+
+Uses a CSPRNG for randomness.
+
+```ts
+generateCharacters(4, '$%^&');                          // &$&^
+generateCharacters(6, '0123456789');                    // 947682
+generateCharacters(6, 'abcdefghijklmnopqrstuvwxyz');    // ihdrnn
+```
+
+#### `randomizeCharacters(characters: string): string`
+
+Randomize the ordering of the characters in the given string.
+
+Uses a CSPRNG for randomness.
+
+```ts
+randomizeCharacters('randomize me');     // e znmaedimro
+randomizeCharacters('randomize me');     // arndimz moee
+randomizeCharacters('randomize me');     // ai emdonmrze
 ```
 
 ## License
