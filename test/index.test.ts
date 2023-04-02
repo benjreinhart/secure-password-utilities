@@ -9,11 +9,6 @@ import {
   randomizeCharacters,
 } from '../src';
 
-// TODO: Can we handle this better?
-if (typeof crypto === 'undefined') {
-  globalThis.crypto = require('node:crypto').webcrypto;
-}
-
 function containsAtLeast(value: string, charset: Array<string>, n: number) {
   if (n < 1 || n > value.length) {
     throw new Error('invalid number argument');

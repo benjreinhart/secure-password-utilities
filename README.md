@@ -1,6 +1,10 @@
 # secure-password-utilities
 
+![Github CI](https://github.com/benjreinhart/secure-password-utilities/workflows/Github%20CI/badge.svg)
+
 Zero-dependency utilities for generating secure passwords and pins.
+
+Works in the browser and Node 19.x+. Support for older node versions is coming soon.
 
 ## Usage
 
