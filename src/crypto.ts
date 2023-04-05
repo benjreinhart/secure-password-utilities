@@ -1,6 +1,4 @@
-function getRandomBytes(numBytes: number): Uint8Array {
-  return crypto.getRandomValues(new Uint8Array(numBytes));
-}
+import { getRandomBytes } from 'secure-password-utilities/random';
 
 function getRandomByte(): number {
   return getRandomBytes(1)[0]!;

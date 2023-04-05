@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
     "strict": true,
-    "declaration": true,
+    "outDir": "esm",
     "target": "es2020",
-    "module": "commonjs",
+    "module": "es6",
     "moduleResolution": "node",
-    "outDir": ".",
     "noImplicitAny": true,
     "sourceMap": true,
     "inlineSources": false,
