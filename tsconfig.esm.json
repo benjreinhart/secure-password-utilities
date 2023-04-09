@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "strict": true,
-    "outDir": "esm",
     "target": "es2020",
     "module": "es6",
     "moduleResolution": "node",
+    "outDir": "lib",
     "noImplicitAny": true,
     "sourceMap": true,
     "inlineSources": false,

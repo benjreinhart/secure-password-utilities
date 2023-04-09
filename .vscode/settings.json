@@ -1,6 +1,0 @@
-{
-  "files.exclude": {
-    "*.{js,d.ts,js.map}": true,
-    "esm/*.{js,d.ts,js.map}": true
-  }
-}

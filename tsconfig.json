@@ -5,7 +5,7 @@
     "target": "es2020",
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": ".",
+    "outDir": "lib",
     "noImplicitAny": true,
     "sourceMap": true,
     "inlineSources": false,

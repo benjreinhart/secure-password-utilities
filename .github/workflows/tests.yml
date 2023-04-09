@@ -10,7 +10,8 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 19.x # Works in browser or node 19+
+          node-version: 16.x
       - run: npm ci
       - run: npm run lint
+      - run: npm run build
       - run: npm run test

@@ -1,4 +1,4 @@
-import {
+const {
   generatePassword,
   generatePin,
   DIGIT_CHARSET,
@@ -7,9 +7,9 @@ import {
   UPPERCASE_CHARSET,
   generateCharacters,
   randomizeCharacters,
-} from '../src';
+} = require('../lib');
 
-function containsAtLeast(value: string, charset: Array<string>, n: number) {
+function containsAtLeast(value, charset, n) {
   if (n < 1 || n > value.length) {
     throw new Error('invalid number argument');
   }
@@ -28,7 +28,7 @@ function containsAtLeast(value: string, charset: Array<string>, n: number) {
   return false;
 }
 
-function containsExact(value: string, charset: Array<string>, n: number) {
+function containsExact(value, charset, n) {
   if (n < 1 || n > value.length) {
     throw new Error('invalid number argument');
   }
@@ -61,14 +61,12 @@ describe('secure-password-utilities', () => {
         'Invalid option: length option must be a number greater than or equal to 1'
       );
 
-      // @ts-ignore
       expect(() => generatePassword({ length: '3' })).toThrowError(
         'Invalid option: length option must be a number greater than or equal to 1'
       );
     });
 
     it('rejects invalid digits option', () => {
-      // @ts-ignore
       expect(() => generatePassword({ digits: '%@' })).toThrowError(
         'Invalid option: digits option must be a boolean, number, or object'
       );
@@ -81,7 +79,6 @@ describe('secure-password-utilities', () => {
     });
 
     it('rejects invalid symbols option', () => {
-      // @ts-ignore
       expect(() => generatePassword({ symbols: '%@' })).toThrowError(
         'Invalid option: symbols option must be a boolean, number, or object'
       );
@@ -94,7 +91,6 @@ describe('secure-password-utilities', () => {
     });
 
     it('rejects invalid lowercase option', () => {
-      // @ts-ignore
       expect(() => generatePassword({ lowercase: '%@' })).toThrowError(
         'Invalid option: lowercase option must be a boolean, number, or object'
       );
@@ -107,7 +103,6 @@ describe('secure-password-utilities', () => {
     });
 
     it('rejects invalid uppercase option', () => {
-      // @ts-ignore
       expect(() => generatePassword({ uppercase: '%@' })).toThrowError(
         'Invalid option: uppercase option must be a boolean, number, or object'
       );
@@ -353,7 +348,6 @@ describe('secure-password-utilities', () => {
         'Invalid argument: length argument must be a number greater than or equal to 1'
       );
 
-      // @ts-ignore
       expect(() => generatePin('5')).toThrowError(
         'Invalid argument: length argument must be a number greater than or equal to 1'
       );
@@ -374,19 +368,16 @@ describe('secure-password-utilities', () => {
         'Invalid argument: length argument must be a number greater than or equal to 0'
       );
 
-      // @ts-ignore
       expect(() => generateCharacters('0', 'abcdef')).toThrowError(
         'Invalid argument: length argument must be a number greater than or equal to 0'
       );
     });
 
     it('rejects invalid charset argument', () => {
-      // @ts-ignore
       expect(() => generateCharacters(5, ['a', 'b'])).toThrowError(
         'Invalid argument: charset argument must be a string with length greater than or equal to 2'
       );
 
-      // @ts-ignore
       expect(() => generateCharacters(5, 'a')).toThrowError(
         'Invalid argument: charset argument must be a string with length greater than or equal to 2'
       );
@@ -409,7 +400,6 @@ describe('secure-password-utilities', () => {
 
   describe('randomizeCharacters', () => {
     it('rejects invalid argument', () => {
-      // @ts-ignore
       expect(() => randomizeCharacters(10)).toThrowError(
         'Invalid argument: characters argument must be a string'
       );
@@ -418,7 +408,7 @@ describe('secure-password-utilities', () => {
     it('can randomize a string of characters', () => {
       const originalString = 'A string to randomize';
 
-      const charCounts: { [char: string]: number } = {};
+      const charCounts = {};
       for (const char of originalString) {
         charCounts[char] = (charCounts[char] || 0) + 1;
       }
