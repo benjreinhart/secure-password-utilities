@@ -1,10 +1,11 @@
-# secure-password-utilities
+# secure-password-utilities ![Github CI](https://github.com/benjreinhart/secure-password-utilities/workflows/Github%20CI/badge.svg)
 
-![Github CI](https://github.com/benjreinhart/secure-password-utilities/workflows/Github%20CI/badge.svg)
+Secure, zero-dependency utilities for generating passwords, pins, and more.
 
-Zero-dependency utilities for generating secure passwords and pins.
-
-Works in the browser and Node 19.x+. Support for older node versions is coming soon.
+* 0️⃣ Zero dependencies
+* 💯 Works in browsers (using _webcrypto_) and node 12.x+ (using _node:crypto_)
+* ✅ Supports both CJS and ESM formats
+* 🪶 Lightweight package, e.g., importing `generatePin` is less than a kilobyte gzipped
 
 ## Usage
 
