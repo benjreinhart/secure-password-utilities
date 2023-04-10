@@ -1,9 +1,9 @@
 .DS_Store
 /node_modules
 /*.gitignored.*
-/lib/*.d.ts
-/lib/*.js
-/lib/*.js.map
-/lib/esm/*.d.ts
-/lib/esm/*.js
-/lib/esm/*.js.map
+/*.d.ts
+/*.js
+/*.js.map
+/esm/*.d.ts
+/esm/*.js
+/esm/*.js.map

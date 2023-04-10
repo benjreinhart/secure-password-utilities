@@ -4,6 +4,6 @@
     "node:crypto": false
   },
   "node": {
-    "./random": "./lib/esm/random.node.js"
+    "./random": "./esm/random.node.js"
   }
 }

@@ -17,41 +17,43 @@
     "browser"
   ],
   "files": [
-    "lib",
+    "/*.js",
+    "/*.js.map",
+    "/*.d.ts",
+    "esm",
     "src"
   ],
   "browser": {
     "node:crypto": false
   },
-  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
-      "import": "./lib/esm/index.js",
-      "default": "./lib/index.js"
+      "types": "./index.d.ts",
+      "import": "./esm/index.js",
+      "default": "./index.js"
     },
     "./crypto": {
-      "types": "./lib/crypto.d.ts",
-      "import": "./lib/esm/crypto.js",
-      "default": "./lib/crypto.js"
+      "types": "./crypto.d.ts",
+      "import": "./esm/crypto.js",
+      "default": "./crypto.js"
     },
     "./random": {
-      "types": "./lib/random.d.ts",
+      "types": "./random.d.ts",
       "node": {
-        "import": "./lib/esm/random.node.js",
-        "require": "./lib/random.node.js"
+        "import": "./esm/random.node.js",
+        "require": "./random.node.js"
       },
-      "import": "./lib/esm/random.js",
-      "require": "./lib/random.js"
+      "import": "./esm/random.js",
+      "require": "./random.js"
     }
   },
   "scripts": {
-    "clean": "rm lib/*.{js,d.ts,js.map} lib/esm/*.{js,d.ts,js.map} 2> /dev/null; echo clean",
+    "clean": "rm *.{js,d.ts,js.map} esm/*.{js,d.ts,js.map} 2> /dev/null; echo clean",
     "prebuild": "npm run clean",
     "build": "tsc && tsc -p tsconfig.esm.json",
-    "lint": "prettier --check 'src/**/*.ts' 'test/*.js'",
+    "lint": "prettier --check 'src/**/*.ts' 'test/**/*.js'",
     "test": "jest --testMatch \"**/test/**/*.test.js\"",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "author": "Ben Reinhart (https://benreinhart.com)",
   "repository": {

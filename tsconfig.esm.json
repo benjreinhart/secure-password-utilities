@@ -4,7 +4,7 @@
     "target": "es2020",
     "module": "es6",
     "moduleResolution": "node",
-    "outDir": "lib/esm",
+    "outDir": "esm",
     "noImplicitAny": true,
     "sourceMap": true,
     "inlineSources": false,

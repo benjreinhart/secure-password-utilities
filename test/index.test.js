@@ -7,7 +7,7 @@ const {
   UPPERCASE_CHARSET,
   generateCharacters,
   randomizeCharacters,
-} = require('../lib');
+} = require('../');
 
 function containsAtLeast(value, charset, n) {
   if (n < 1 || n > value.length) {
