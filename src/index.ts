@@ -1,4 +1,4 @@
-import { getRandomValues } from './crypto';
+import { getRandomValues } from 'secure-password-utilities/crypto';
 
 export const DIGIT_CHARSET = '0123456789';
 export const LOWERCASE_CHARSET = 'abcdefghijklmnopqrstuvwxyz';
