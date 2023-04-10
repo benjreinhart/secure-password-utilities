@@ -23,6 +23,7 @@
   "browser": {
     "node:crypto": false
   },
+  "types": "./lib/index.d.ts",
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
