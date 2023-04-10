@@ -28,23 +28,23 @@
   "exports": {
     ".": {
       "types": "./lib/index.d.ts",
-      "import": "./lib/index.mjs",
+      "import": "./lib/esm/index.js",
       "default": "./lib/index.js"
     },
     "./random": {
       "types": "./lib/random.d.ts",
       "node": {
-        "import": "./lib/random.node.mjs",
+        "import": "./lib/esm/random.node.js",
         "require": "./lib/random.node.js"
       },
-      "import": "./lib/random.mjs",
+      "import": "./lib/esm/random.js",
       "require": "./lib/random.js"
     }
   },
   "scripts": {
-    "clean": "rm -rf lib",
+    "clean": "rm lib/*.{js,d.ts,js.map} lib/esm/*.{js,d.ts,js.map} 2> /dev/null; echo clean",
     "prebuild": "npm run clean",
-    "build": "node build.js",
+    "build": "tsc && tsc -p tsconfig.esm.json",
     "lint": "prettier --check 'src/**/*.ts' 'test/*.js'",
     "test": "jest --testMatch \"**/test/**/*.test.js\"",
     "prepublishOnly": "npm run clean && npm run build"
