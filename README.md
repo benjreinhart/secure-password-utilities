@@ -18,9 +18,8 @@ Basic usage:
 ```ts
 import {generatePassword, generatePin} from 'secure-password-utilities';
 
-// Default length is 12.
 // Defaults include all uppercase/lowercase characters, digits, and symbols.
-const password = generatePassword();
+const password = generatePassword(12);
 console.log(password); // l[Nz8UfU.o4g
 
 const pin = generatePin(6);
@@ -47,7 +46,6 @@ type PasswordOptionType =
   | { min: number };
 
 type PasswordOptionsType = {
-  length: number;
   digits: PasswordOptionType;
   symbols: PasswordOptionType;
   lowercase: PasswordOptionType;
@@ -59,17 +57,16 @@ Examples:
 
 ```ts
 // Contains only letters (upper and lowercase) and digits.
-const alphanumericPassword = generatePassword({ length: 10, symbols: false });
+const alphanumericPassword = generatePassword(10, { symbols: false });
 console.log(alphanumericPassword); // 49Faqzd8jx
 
-const password = generatePassword({
+const password = generatePassword(12, {
   symbols: 2,               // Resulting password must contain exactly two symbols.
   uppercase: { min: 1 },    // Resulting password must contain a minimum of 1 upperase character.
 });
 console.log(password); // b1yT6$jO`kvf
 
-const uppercasePassword = generatePassword({
-  length: 10,               // Length of the resulting password.
+const uppercasePassword = generatePassword(10, {
   digits: false,            // Resulting password must NOT contain any digits.
   symbols: false,           // Resulting password must NOT contain any symbols.
   lowercase: false,         // Resulting password must NOT contain any lowercase characters.

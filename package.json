@@ -52,6 +52,7 @@
     "prebuild": "npm run clean",
     "build": "tsc && tsc -p tsconfig.esm.json",
     "lint": "prettier --check 'src/**/*.ts' 'test/**/*.js'",
+    "pretest": "npm run build",
     "test": "jest --testMatch \"**/test/**/*.test.js\"",
     "prepublishOnly": "npm run build"
   },

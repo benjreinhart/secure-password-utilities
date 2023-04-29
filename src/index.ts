@@ -19,7 +19,6 @@ export type PasswordOptionType =
   | { min: number };
 
 export type PasswordOptionsType = {
-  length: number;
   digits: PasswordOptionType;
   symbols: PasswordOptionType;
   lowercase: PasswordOptionType;
@@ -31,22 +30,20 @@ export type PasswordOptionsType = {
  *
  * Uses a CSPRNG for randomness.
  *
- *     generatePassword(); // l[Nz8UfU.o4g
- *     generatePassword({ length: 8 }); // i&n4Htp=
- *     generatePassword({ length: 8, symbols: false, digits: 2 }); // k9WTkaP6
- *     generatePassword({ length: 8, digits: {min: 2} }); // 0(c69+.f
+ *     generatePassword(12); // l[Nz8UfU.o4g
+ *     generatePassword(8, { symbols: false, digits: 2 }); // k9WTkaP6
+ *     generatePassword(8, { digits: {min: 2} }); // 0(c67+.f
  *
+ * @param length The length of the resulting password.
  * @param options
- * @param options.length The length of the resulting password. Defaults to 12.
  * @param options.digits Include or exclude digits.
  * @param options.symbols Include or exclude symbols.
  * @param options.lowercase Include or exclude lowercase.
  * @param options.uppercase Include or exclude uppercase.
  * @returns A random password.
  */
-export function generatePassword(options?: Partial<PasswordOptionsType>): string {
+export function generatePassword(length: number, options?: Partial<PasswordOptionsType>): string {
   const defaults: PasswordOptionsType = {
-    length: 12,
     digits: true,
     symbols: true,
     uppercase: true,
@@ -55,8 +52,7 @@ export function generatePassword(options?: Partial<PasswordOptionsType>): string
 
   options = options || {};
 
-  return createPassword({
-    length: options.length === undefined ? defaults.length : options.length,
+  return createPassword(length, {
     digits: options.digits === undefined ? defaults.digits : options.digits,
     symbols: options.symbols === undefined ? defaults.symbols : options.symbols,
     lowercase: options.lowercase === undefined ? defaults.lowercase : options.lowercase,
@@ -64,23 +60,21 @@ export function generatePassword(options?: Partial<PasswordOptionsType>): string
   });
 }
 
-function createPassword(options: PasswordOptionsType) {
-  validatePasswordOptions(options);
+function createPassword(passwordLength: number, options: PasswordOptionsType) {
+  validatePasswordOptions(passwordLength, options);
 
-  const passwordLength = options.length;
-
-  const [initDigitLength, moreDigits] = getLengthForOption(options.digits);
-  const [initSymbolLength, moreSymbols] = getLengthForOption(options.symbols);
-  const [initLowercaseLength, moreLowercase] = getLengthForOption(options.lowercase);
-  const [initUppercaseLength, moreUppercase] = getLengthForOption(options.uppercase);
+  const [initDigitLength, moreDigits] = getInitialLengthForOption(options.digits);
+  const [initSymbolLength, moreSymbols] = getInitialLengthForOption(options.symbols);
+  const [initLowercaseLength, moreLowercase] = getInitialLengthForOption(options.lowercase);
+  const [initUppercaseLength, moreUppercase] = getInitialLengthForOption(options.uppercase);
 
   // Construct the initial response based on the exact or minimum characters
   // specified for digits, symbols, lowercase and uppercase character sets.
   let result =
-    generateCharacters(initDigitLength!, DIGIT_CHARSET) +
-    generateCharacters(initSymbolLength!, SYMBOL_CHARSET) +
-    generateCharacters(initLowercaseLength!, LOWERCASE_CHARSET) +
-    generateCharacters(initUppercaseLength!, UPPERCASE_CHARSET);
+    generateCharacters(initDigitLength, DIGIT_CHARSET) +
+    generateCharacters(initSymbolLength, SYMBOL_CHARSET) +
+    generateCharacters(initLowercaseLength, LOWERCASE_CHARSET) +
+    generateCharacters(initUppercaseLength, UPPERCASE_CHARSET);
 
   let remainingCharset = '';
 
@@ -105,32 +99,20 @@ function createPassword(options: PasswordOptionsType) {
   return randomizeCharacters(result);
 }
 
-function validatePasswordOptions(options: PasswordOptionsType) {
-  const { length } = options;
-
+function validatePasswordOptions(length: number, options: PasswordOptionsType) {
   if (typeof length !== 'number' || length < 1) {
     throw new Error('Invalid option: length option must be a number greater than or equal to 1');
   }
 
-  const [initDigitLength, moreDigits] = getLengthForOption(options.digits);
-  if (typeof initDigitLength !== 'number' || initDigitLength < 0) {
-    throw new Error('Invalid option: digits option must be a boolean, number, or object');
-  }
+  validatePasswordOption('lowercase', options.lowercase);
+  validatePasswordOption('uppercase', options.uppercase);
+  validatePasswordOption('digits', options.digits);
+  validatePasswordOption('symbols', options.symbols);
 
-  const [initSymbolLength, moreSymbols] = getLengthForOption(options.symbols);
-  if (typeof initSymbolLength !== 'number' || initSymbolLength < 0) {
-    throw new Error('Invalid option: symbols option must be a boolean, number, or object');
-  }
-
-  const [initLowercaseLength, moreLowercase] = getLengthForOption(options.lowercase);
-  if (typeof initLowercaseLength !== 'number' || initLowercaseLength < 0) {
-    throw new Error('Invalid option: lowercase option must be a boolean, number, or object');
-  }
-
-  const [initUppercaseLength, moreUppercase] = getLengthForOption(options.uppercase);
-  if (typeof initUppercaseLength !== 'number' || initUppercaseLength < 0) {
-    throw new Error('Invalid option: uppercase option must be a boolean, number, or object');
-  }
+  const [initDigitLength, moreDigits] = getInitialLengthForOption(options.digits);
+  const [initSymbolLength, moreSymbols] = getInitialLengthForOption(options.symbols);
+  const [initLowercaseLength, moreLowercase] = getInitialLengthForOption(options.lowercase);
+  const [initUppercaseLength, moreUppercase] = getInitialLengthForOption(options.uppercase);
 
   const sum = initDigitLength + initSymbolLength + initLowercaseLength + initUppercaseLength;
 
@@ -145,18 +127,40 @@ function validatePasswordOptions(options: PasswordOptionsType) {
   }
 }
 
-function getLengthForOption(option: PasswordOptionType): [number?, boolean?] {
+// This assumes that any missing options were filled in with a default, i.e., no `undefined` options.
+function validatePasswordOption(name: string, option: PasswordOptionType) {
+  if (typeof option === 'boolean') {
+    return;
+  }
+
+  if (typeof option === 'number') {
+    if (option < 0) {
+      throw new Error(`Invalid option: ${name} option cannot be a negative number`);
+    }
+    return;
+  }
+
+  if (option !== null && typeof option === 'object') {
+    if (typeof option.min !== 'number' || option.min < 0) {
+      throw new Error(
+        `Invalid option: ${name} option 'min' property must be a non-negative integer`
+      );
+    }
+    return;
+  }
+
+  throw new Error(`Invalid option: ${name} option must be a boolean, number, or object`);
+}
+
+// Assumes option has already been validated, populated with defaults, and is thus well-formed.
+function getInitialLengthForOption(option: PasswordOptionType): [number, boolean] {
   switch (typeof option) {
     case 'boolean':
       return [0, option];
     case 'number':
       return [option, false];
-    case 'object':
-      return [option.min, true];
     default:
-      // Shouldn't happen normally given compile-time typing,
-      // but may happen at run-time while validating input.
-      return [undefined, undefined];
+      return [option.min, true];
   }
 }
 

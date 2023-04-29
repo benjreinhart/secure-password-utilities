@@ -53,71 +53,70 @@ const PASSWORD_WITHOUT_UPPERCASE_REGEX = /^[a-z0-9!"#$%&'()*+,-./:;<=>?@\[\]{}^_
 describe('secure-password-utilities', () => {
   describe('generatePassword', () => {
     it('rejects invalid length property', () => {
-      expect(() => generatePassword({ length: -1 })).toThrowError(
+      expect(() => generatePassword(-1)).toThrowError(
         'Invalid option: length option must be a number greater than or equal to 1'
       );
 
-      expect(() => generatePassword({ length: 0 })).toThrowError(
+      expect(() => generatePassword(0)).toThrowError(
         'Invalid option: length option must be a number greater than or equal to 1'
       );
 
-      expect(() => generatePassword({ length: '3' })).toThrowError(
+      expect(() => generatePassword('3')).toThrowError(
         'Invalid option: length option must be a number greater than or equal to 1'
       );
     });
 
     it('rejects invalid digits option', () => {
-      expect(() => generatePassword({ digits: '%@' })).toThrowError(
+      expect(() => generatePassword(8, { digits: '%@' })).toThrowError(
         'Invalid option: digits option must be a boolean, number, or object'
       );
-      expect(() => generatePassword({ digits: -1 })).toThrowError(
-        'Invalid option: digits option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { digits: -1 })).toThrowError(
+        'Invalid option: digits option cannot be a negative number'
       );
-      expect(() => generatePassword({ digits: { min: -1 } })).toThrowError(
-        'Invalid option: digits option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { digits: { min: -1 } })).toThrowError(
+        "Invalid option: digits option 'min' property must be a non-negative integer"
       );
     });
 
     it('rejects invalid symbols option', () => {
-      expect(() => generatePassword({ symbols: '%@' })).toThrowError(
+      expect(() => generatePassword(8, { symbols: '%@' })).toThrowError(
         'Invalid option: symbols option must be a boolean, number, or object'
       );
-      expect(() => generatePassword({ symbols: -1 })).toThrowError(
-        'Invalid option: symbols option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { symbols: -1 })).toThrowError(
+        'Invalid option: symbols option cannot be a negative number'
       );
-      expect(() => generatePassword({ symbols: { min: -1 } })).toThrowError(
-        'Invalid option: symbols option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { symbols: { min: -1 } })).toThrowError(
+        "Invalid option: symbols option 'min' property must be a non-negative integer"
       );
     });
 
     it('rejects invalid lowercase option', () => {
-      expect(() => generatePassword({ lowercase: '%@' })).toThrowError(
+      expect(() => generatePassword(8, { lowercase: '%@' })).toThrowError(
         'Invalid option: lowercase option must be a boolean, number, or object'
       );
-      expect(() => generatePassword({ lowercase: -1 })).toThrowError(
-        'Invalid option: lowercase option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { lowercase: -1 })).toThrowError(
+        'Invalid option: lowercase option cannot be a negative number'
       );
-      expect(() => generatePassword({ lowercase: { min: -1 } })).toThrowError(
-        'Invalid option: lowercase option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { lowercase: { min: -1 } })).toThrowError(
+        "Invalid option: lowercase option 'min' property must be a non-negative integer"
       );
     });
 
     it('rejects invalid uppercase option', () => {
-      expect(() => generatePassword({ uppercase: '%@' })).toThrowError(
+      expect(() => generatePassword(8, { uppercase: '%@' })).toThrowError(
         'Invalid option: uppercase option must be a boolean, number, or object'
       );
-      expect(() => generatePassword({ uppercase: -1 })).toThrowError(
-        'Invalid option: uppercase option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { uppercase: -1 })).toThrowError(
+        'Invalid option: uppercase option cannot be a negative number'
       );
-      expect(() => generatePassword({ uppercase: { min: -1 } })).toThrowError(
-        'Invalid option: uppercase option must be a boolean, number, or object'
+      expect(() => generatePassword(8, { uppercase: { min: -1 } })).toThrowError(
+        "Invalid option: uppercase option 'min' property must be a non-negative integer"
       );
     });
 
     it('rejects length / requested character mismatch', () => {
       expect(() =>
-        generatePassword({
-          length: 8,
+        generatePassword(8, {
           digits: 2,
           symbols: 2,
           lowercase: { min: 3 },
@@ -126,22 +125,19 @@ describe('secure-password-utilities', () => {
       ).toThrowError('Invalid option: Requested characters exceeds expected length');
 
       expect(() =>
-        generatePassword({
-          length: 6,
+        generatePassword(6, {
           digits: 8,
         })
       ).toThrowError('Invalid option: Requested characters exceeds expected length');
 
       expect(() =>
-        generatePassword({
-          length: 6,
+        generatePassword(6, {
           lowercase: { min: 8 },
         })
       ).toThrowError('Invalid option: Requested characters exceeds expected length');
 
       expect(() =>
-        generatePassword({
-          length: 6,
+        generatePassword(6, {
           digits: false,
           symbols: false,
           lowercase: 2,
@@ -151,9 +147,9 @@ describe('secure-password-utilities', () => {
     });
 
     it('can generate a secure password', () => {
-      const password1 = generatePassword();
-      const password2 = generatePassword();
-      const password3 = generatePassword();
+      const password1 = generatePassword(12);
+      const password2 = generatePassword(12);
+      const password3 = generatePassword(12);
 
       expect(password1).toHaveLength(12);
       expect(password1).toMatch(PASSWORD_REGEX);
@@ -170,8 +166,7 @@ describe('secure-password-utilities', () => {
 
     it('can disable digits', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           digits: false,
         });
 
@@ -182,8 +177,7 @@ describe('secure-password-utilities', () => {
 
     it('can disable symbols', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           symbols: false,
         });
 
@@ -194,8 +188,7 @@ describe('secure-password-utilities', () => {
 
     it('can disable lowercase', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           lowercase: false,
         });
 
@@ -206,8 +199,7 @@ describe('secure-password-utilities', () => {
 
     it('can disable uppercase', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           uppercase: false,
         });
 
@@ -218,8 +210,7 @@ describe('secure-password-utilities', () => {
 
     it('can require an exact number of digits', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           digits: 2,
         });
 
@@ -231,8 +222,7 @@ describe('secure-password-utilities', () => {
 
     it('can require an exact number of symbols', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           symbols: 2,
         });
 
@@ -244,8 +234,7 @@ describe('secure-password-utilities', () => {
 
     it('can require an exact number of lowercase', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           lowercase: 2,
         });
 
@@ -257,8 +246,7 @@ describe('secure-password-utilities', () => {
 
     it('can require an exact number of uppercase', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           uppercase: 2,
         });
 
@@ -270,8 +258,7 @@ describe('secure-password-utilities', () => {
 
     it('can require a minimum number of digits', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           digits: { min: 2 },
         });
 
@@ -283,8 +270,7 @@ describe('secure-password-utilities', () => {
 
     it('can require a minimum number of symbols', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           symbols: { min: 2 },
         });
 
@@ -296,8 +282,7 @@ describe('secure-password-utilities', () => {
 
     it('can require a minimum number of lowercase', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           lowercase: { min: 2 },
         });
 
@@ -309,8 +294,7 @@ describe('secure-password-utilities', () => {
 
     it('can require a minimum number of uppercase', () => {
       for (let i = 6; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           uppercase: { min: 2 },
         });
 
@@ -322,8 +306,7 @@ describe('secure-password-utilities', () => {
 
     it('can require a mix of exact and minimum', () => {
       for (let i = 8; i <= 24; i++) {
-        const password = generatePassword({
-          length: i,
+        const password = generatePassword(i, {
           digits: { min: 2 },
           symbols: 2,
           uppercase: { min: 1 },
