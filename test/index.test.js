@@ -114,6 +114,36 @@ describe('secure-password-utilities', () => {
       );
     });
 
+    it('rejects invalid charset options', () => {
+      expect(() => generatePassword(8, { charset: { digits: {} } })).toThrowError(
+        'Invalid charset option: digits charset must be a string'
+      );
+      expect(() => generatePassword(8, { charset: { digits: 'abc123a' } })).toThrowError(
+        'Invalid charset option: digits charset contains duplicate characters'
+      );
+
+      expect(() => generatePassword(8, { charset: { symbols: {} } })).toThrowError(
+        'Invalid charset option: symbols charset must be a string'
+      );
+      expect(() => generatePassword(8, { charset: { symbols: 'abc123a' } })).toThrowError(
+        'Invalid charset option: symbols charset contains duplicate characters'
+      );
+
+      expect(() => generatePassword(8, { charset: { lowercase: {} } })).toThrowError(
+        'Invalid charset option: lowercase charset must be a string'
+      );
+      expect(() => generatePassword(8, { charset: { lowercase: 'abc123a' } })).toThrowError(
+        'Invalid charset option: lowercase charset contains duplicate characters'
+      );
+
+      expect(() => generatePassword(8, { charset: { uppercase: {} } })).toThrowError(
+        'Invalid charset option: uppercase charset must be a string'
+      );
+      expect(() => generatePassword(8, { charset: { uppercase: 'abc123a' } })).toThrowError(
+        'Invalid charset option: uppercase charset contains duplicate characters'
+      );
+    });
+
     it('rejects length / requested character mismatch', () => {
       expect(() =>
         generatePassword(8, {
@@ -317,6 +347,58 @@ describe('secure-password-utilities', () => {
         expect(containsAtLeast(password, DIGIT_CHARSET.split(''), 2)).toBeTruthy();
         expect(containsExact(password, SYMBOL_CHARSET.split(''), 2)).toBeTruthy();
         expect(containsAtLeast(password, UPPERCASE_CHARSET.split(''), 1)).toBeTruthy();
+      }
+    });
+
+    it('can override the digits charset', () => {
+      for (let i = 8; i <= 24; i++) {
+        const password = generatePassword(i, {
+          symbols: false,
+          lowercase: false,
+          uppercase: false,
+          charset: { digits: '12345' },
+        });
+        expect(password).toHaveLength(i);
+        expect(password).toMatch(/^[12345]+$/);
+      }
+    });
+
+    it('can override the symbols charset', () => {
+      for (let i = 8; i <= 24; i++) {
+        const password = generatePassword(i, {
+          digits: false,
+          lowercase: false,
+          uppercase: false,
+          charset: { symbols: '!@#$%' },
+        });
+        expect(password).toHaveLength(i);
+        expect(password).toMatch(/^[!@#$%]+$/);
+      }
+    });
+
+    it('can override the lowercase charset', () => {
+      for (let i = 8; i <= 24; i++) {
+        const password = generatePassword(i, {
+          digits: false,
+          symbols: false,
+          uppercase: false,
+          charset: { lowercase: 'abcdef' },
+        });
+        expect(password).toHaveLength(i);
+        expect(password).toMatch(/^[abcdef]+$/);
+      }
+    });
+
+    it('can override the uppercase charset', () => {
+      for (let i = 8; i <= 24; i++) {
+        const password = generatePassword(i, {
+          digits: false,
+          symbols: false,
+          lowercase: false,
+          charset: { uppercase: 'ABCDEF' },
+        });
+        expect(password).toHaveLength(i);
+        expect(password).toMatch(/^[ABCDEF]+$/);
       }
     });
   });

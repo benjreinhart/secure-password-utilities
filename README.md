@@ -44,7 +44,7 @@ console.log(UPPERCASE_CHARSET); // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 console.log(SYMBOL_CHARSET);    // !"#$%&\'()*+,-./:;<=>?@[]{}^_`|~
 ```
 
-#### `generatePassword(options: PasswordOptionsType): string`
+#### `generatePassword(length: number, options: PasswordOptionsType): string`
 
 Generates a random password.
 
@@ -61,11 +61,17 @@ type PasswordOptionType =
   // { min: <number> } means include at least <number> [character type]s
   | { min: number };
 
-type PasswordOptionsType = {
-  digits: PasswordOptionType;
-  symbols: PasswordOptionType;
-  lowercase: PasswordOptionType;
-  uppercase: PasswordOptionType;
+export type PasswordOptionsType = {
+  digits?: PasswordOptionType;
+  symbols?: PasswordOptionType;
+  lowercase?: PasswordOptionType;
+  uppercase?: PasswordOptionType;
+  charset?: {
+    digits?: string;
+    symbols?: string;
+    lowercase?: string;
+    uppercase?: string;
+  };
 };
 ```
 
@@ -88,6 +94,30 @@ const uppercasePassword = generatePassword(10, {
   lowercase: false,         // Resulting password must NOT contain any lowercase characters.
 });
 console.log(uppercasePassword); // IHDPPZRNPS
+```
+
+You can override the character set used for each option using the `charset` option, e.g.:
+
+```ts
+// Ensure exactly three symbols are present in the resulting
+// password using the following values for 'symbols':
+//
+//     ! @ # $ %
+//
+const password = generatePassword(12, {
+  symbols: 3,
+  charset: { symbols: '!@#$%' },
+});
+console.log(password); // A@D#tkG!ymFE
+
+// Generate a 12-character password with at least 3 digits and no symbols.
+// For the digits, only use even digits, i.e., 0, 2, 4, 6, 8.
+const evenDigitPassword = generatePassword(12, {
+  digits: { min: 3 },
+  symbols: false,
+  charset: { digits: '02468' }
+});
+console.log(evenDigitPassword); // e6V8zy0kfTAN
 ```
 
 #### `generatePin(length: number): string`

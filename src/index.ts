@@ -19,10 +19,16 @@ export type PasswordOptionType =
   | { min: number };
 
 export type PasswordOptionsType = {
-  digits: PasswordOptionType;
-  symbols: PasswordOptionType;
-  lowercase: PasswordOptionType;
-  uppercase: PasswordOptionType;
+  digits?: PasswordOptionType;
+  symbols?: PasswordOptionType;
+  lowercase?: PasswordOptionType;
+  uppercase?: PasswordOptionType;
+  charset?: {
+    digits?: string;
+    symbols?: string;
+    lowercase?: string;
+    uppercase?: string;
+  };
 };
 
 /**
@@ -40,28 +46,54 @@ export type PasswordOptionsType = {
  * @param options.symbols Include or exclude symbols.
  * @param options.lowercase Include or exclude lowercase.
  * @param options.uppercase Include or exclude uppercase.
+ * @param options.charset
+ * @param options.charset.digits Override the character set for digits.
+ * @param options.charset.symbols Override the character set for symbols.
+ * @param options.charset.lowercase Override the character set for lowercase.
+ * @param options.charset.uppercase Override the character set for uppercase.
  * @returns A random password.
  */
-export function generatePassword(length: number, options?: Partial<PasswordOptionsType>): string {
-  const defaults: PasswordOptionsType = {
-    digits: true,
-    symbols: true,
-    uppercase: true,
-    lowercase: true,
-  };
-
+export function generatePassword(length: number, options?: PasswordOptionsType): string {
   options = options || {};
 
-  return createPassword(length, {
-    digits: options.digits === undefined ? defaults.digits : options.digits,
-    symbols: options.symbols === undefined ? defaults.symbols : options.symbols,
-    lowercase: options.lowercase === undefined ? defaults.lowercase : options.lowercase,
-    uppercase: options.uppercase === undefined ? defaults.uppercase : options.uppercase,
-  });
+  return createPassword(
+    length,
+    {
+      digits: options.digits ?? true,
+      symbols: options.symbols ?? true,
+      lowercase: options.lowercase ?? true,
+      uppercase: options.uppercase ?? true,
+    },
+    {
+      digits: options.charset?.digits ?? DIGIT_CHARSET,
+      symbols: options.charset?.symbols ?? SYMBOL_CHARSET,
+      lowercase: options.charset?.lowercase ?? LOWERCASE_CHARSET,
+      uppercase: options.charset?.uppercase ?? UPPERCASE_CHARSET,
+    }
+  );
 }
 
-function createPassword(passwordLength: number, options: PasswordOptionsType) {
+type PasswordOptionsTypeRequired = {
+  digits: PasswordOptionType;
+  symbols: PasswordOptionType;
+  lowercase: PasswordOptionType;
+  uppercase: PasswordOptionType;
+};
+
+type CharsetType = {
+  digits: string;
+  symbols: string;
+  lowercase: string;
+  uppercase: string;
+};
+
+function createPassword(
+  passwordLength: number,
+  options: PasswordOptionsTypeRequired,
+  charset: CharsetType
+) {
   validatePasswordOptions(passwordLength, options);
+  validateCharsetOptions(charset);
 
   const [initDigitLength, moreDigits] = getInitialLengthForOption(options.digits);
   const [initSymbolLength, moreSymbols] = getInitialLengthForOption(options.symbols);
@@ -71,27 +103,27 @@ function createPassword(passwordLength: number, options: PasswordOptionsType) {
   // Construct the initial response based on the exact or minimum characters
   // specified for digits, symbols, lowercase and uppercase character sets.
   let result =
-    generateCharacters(initDigitLength, DIGIT_CHARSET) +
-    generateCharacters(initSymbolLength, SYMBOL_CHARSET) +
-    generateCharacters(initLowercaseLength, LOWERCASE_CHARSET) +
-    generateCharacters(initUppercaseLength, UPPERCASE_CHARSET);
+    generateCharacters(initDigitLength, charset.digits) +
+    generateCharacters(initSymbolLength, charset.symbols) +
+    generateCharacters(initLowercaseLength, charset.lowercase) +
+    generateCharacters(initUppercaseLength, charset.uppercase);
 
   let remainingCharset = '';
 
   if (moreDigits) {
-    remainingCharset += DIGIT_CHARSET;
+    remainingCharset += charset.digits;
   }
 
   if (moreSymbols) {
-    remainingCharset += SYMBOL_CHARSET;
+    remainingCharset += charset.symbols;
   }
 
   if (moreLowercase) {
-    remainingCharset += LOWERCASE_CHARSET;
+    remainingCharset += charset.lowercase;
   }
 
   if (moreUppercase) {
-    remainingCharset += UPPERCASE_CHARSET;
+    remainingCharset += charset.uppercase;
   }
 
   result += generateCharacters(passwordLength - result.length, remainingCharset);
@@ -99,15 +131,15 @@ function createPassword(passwordLength: number, options: PasswordOptionsType) {
   return randomizeCharacters(result);
 }
 
-function validatePasswordOptions(length: number, options: PasswordOptionsType) {
+function validatePasswordOptions(length: number, options: PasswordOptionsTypeRequired) {
   if (typeof length !== 'number' || length < 1) {
     throw new Error('Invalid option: length option must be a number greater than or equal to 1');
   }
 
-  validatePasswordOption('lowercase', options.lowercase);
-  validatePasswordOption('uppercase', options.uppercase);
   validatePasswordOption('digits', options.digits);
   validatePasswordOption('symbols', options.symbols);
+  validatePasswordOption('lowercase', options.lowercase);
+  validatePasswordOption('uppercase', options.uppercase);
 
   const [initDigitLength, moreDigits] = getInitialLengthForOption(options.digits);
   const [initSymbolLength, moreSymbols] = getInitialLengthForOption(options.symbols);
@@ -161,6 +193,23 @@ function getInitialLengthForOption(option: PasswordOptionType): [number, boolean
       return [option, false];
     default:
       return [option.min, true];
+  }
+}
+
+function validateCharsetOptions(charsets: CharsetType) {
+  validateCharsetOption('digits', charsets.digits);
+  validateCharsetOption('symbols', charsets.symbols);
+  validateCharsetOption('lowercase', charsets.lowercase);
+  validateCharsetOption('uppercase', charsets.uppercase);
+}
+
+function validateCharsetOption(name: string, charset: string) {
+  if (typeof charset !== 'string') {
+    throw new Error(`Invalid charset option: ${name} charset must be a string`);
+  }
+
+  if (charset.length !== new Set(charset).size) {
+    throw new Error(`Invalid charset option: ${name} charset contains duplicate characters`);
   }
 }
 
