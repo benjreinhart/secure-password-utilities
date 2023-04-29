@@ -235,6 +235,10 @@ export function randomizeCharacters(characters: string) {
 
   const charactersLength = characters.length;
 
+  if (charactersLength < 2) {
+    return characters;
+  }
+
   // Get random values within the index range of our input characters.
   // We will use these values to swap elements from the input.
   //

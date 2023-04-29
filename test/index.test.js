@@ -388,6 +388,11 @@ describe('secure-password-utilities', () => {
       );
     });
 
+    it('is a no-op for strings with 1 character or less', () => {
+      expect(randomizeCharacters('')).toEqual('');
+      expect(randomizeCharacters('#')).toEqual('#');
+    });
+
     it('can randomize a string of characters', () => {
       const originalString = 'A string to randomize';
 
