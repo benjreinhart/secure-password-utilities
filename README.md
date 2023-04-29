@@ -28,6 +28,22 @@ console.log(pin); // 036919
 
 ## API
 
+#### Constants
+
+```ts
+import {
+  DIGIT_CHARSET,
+  LOWERCASE_CHARSET,
+  UPPERCASE_CHARSET,
+  SYMBOL_CHARSET
+} from 'secure-password-utilities';
+
+console.log(DIGIT_CHARSET);     // 0123456789
+console.log(LOWERCASE_CHARSET); // abcdefghijklmnopqrstuvwxyz
+console.log(UPPERCASE_CHARSET); // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+console.log(SYMBOL_CHARSET);    // !"#$%&\'()*+,-./:;<=>?@[]{}^_`|~
+```
+
 #### `generatePassword(options: PasswordOptionsType): string`
 
 Generates a random password.
