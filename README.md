@@ -28,23 +28,32 @@ console.log(pin); // 036919
 
 ## API
 
-#### Constants
+- [secure-password-utilities](#secure-password-utilities)
+  - [generatePassword](#generatepassword)
+  - [generatePin](#generatepin)
+  - [generateCharacters](#generatecharacters)
+- [secure-password-utilities/constants](#secure-password-utilitiesconstants)
+  - [DIGIT_CHARSET](#digit_charset)
+  - [LOWERCASE_CHARSET](#lowercase_charset)
+  - [UPPERCASE_CHARSET](#uppercase_charset)
+  - [SYMBOL_CHARSET](#symbol_charset)
+- [secure-password-utilities/csprng](#secure-password-utilitiescsprng)
+  - [getRandomBytes](#getrandombytes)
+- [secure-password-utilities/random](#secure-password-utilitiesrandom)
+  - [getRandomValues](#getrandomvalues)
+  - [randomizeCharacters](#randomizecharacters)
+
+### secure-password-utilities
 
 ```ts
-import {
-  DIGIT_CHARSET,
-  LOWERCASE_CHARSET,
-  UPPERCASE_CHARSET,
-  SYMBOL_CHARSET
-} from 'secure-password-utilities';
-
-console.log(DIGIT_CHARSET);     // 0123456789
-console.log(LOWERCASE_CHARSET); // abcdefghijklmnopqrstuvwxyz
-console.log(UPPERCASE_CHARSET); // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-console.log(SYMBOL_CHARSET);    // !"#$%&\'()*+,-./:;<=>?@[]{}^_`|~
+import {generatePassword, generatePin, generateCharacters} from 'secure-password-utilities'
 ```
 
-#### `generatePassword(length: number, options: PasswordOptionsType): string`
+#### generatePassword
+
+```ts
+function generatePassword(length: number, options?: PasswordOptionsType): string
+```
 
 Generates a random password.
 
@@ -120,7 +129,11 @@ const evenDigitPassword = generatePassword(12, {
 console.log(evenDigitPassword); // e6V8zy0kfTAN
 ```
 
-#### `generatePin(length: number): string`
+#### generatePin
+
+```ts
+function generatePin(length: number): string
+```
 
 Generate a random digit pin.
 
@@ -131,7 +144,11 @@ generatePin(6); // 036919
 generatePin(8); // 45958396
 ```
 
-#### `generateCharacters(length: number, charset: string): string`
+#### generateCharacters
+
+```ts
+function generateCharacters(length: number, charset: string): string
+```
 
 Generate a string of `length` characters chosen randomly from the given `charset`.
 
@@ -143,7 +160,75 @@ generateCharacters(6, '0123456789');                    // 947682
 generateCharacters(6, 'abcdefghijklmnopqrstuvwxyz');    // ihdrnn
 ```
 
-#### `randomizeCharacters(characters: string): string`
+### secure-password-utilities/constants
+
+```ts
+import {DIGIT_CHARSET, LOWERCASE_CHARSET, UPPERCASE_CHARSET, SYMBOL_CHARSET} from 'secure-password-utilities/constants'
+```
+
+#### DIGIT_CHARSET
+
+```ts
+const DIGIT_CHARSET = "0123456789";
+```
+
+#### LOWERCASE_CHARSET
+
+```ts
+const LOWERCASE_CHARSET = "abcdefghijklmnopqrstuvwxyz";
+```
+
+#### UPPERCASE_CHARSET
+
+```ts
+const UPPERCASE_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+```
+
+#### SYMBOL_CHARSET
+
+```ts
+// OWASP password special characters except space and backslash.
+//
+//     See https://owasp.org/www-community/password-special-characters
+//
+const SYMBOL_CHARSET = "!\"#$%&'()*+,-./:;<=>?@[]{}^_`|~";
+```
+
+### secure-password-utilities/csprng
+
+```ts
+import {getRandomBytes} from 'secure-password-utilities/csprng'
+```
+
+#### getRandomBytes
+
+```ts
+function getRandomBytes(numBytes: number): Uint8Array;
+```
+
+Generates random bytes. This is a wrapper around the platform's native CSPRNG. In node, this will be `randomBytes` from the standard library. In the browser, this will be `crypto.getRandomValues`.
+
+### secure-password-utilities/random
+
+```ts
+import {getRandomValues, randomizeCharacters} from 'secure-password-utilities/random'
+```
+
+#### getRandomValues
+
+```ts
+function getRandomValues(numValues: number, rangeMax?: number): Uint8Array
+```
+
+Get random values between 0 and `rangeMax` (at most, 256 exclusive) from a CSPRNG.
+
+This is a helper function to safely filter random byte values into a desired range. "safely" here meaning careful use of the modulo operator to avoid modulo bias.
+
+#### randomizeCharacters
+
+```ts
+function randomizeCharacters(characters: string): string
+```
 
 Randomize the ordering of the characters in the given string.
 

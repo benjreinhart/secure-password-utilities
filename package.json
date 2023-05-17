@@ -32,19 +32,24 @@
       "import": "./esm/index.js",
       "default": "./index.js"
     },
-    "./crypto": {
-      "types": "./crypto.d.ts",
-      "import": "./esm/crypto.js",
-      "default": "./crypto.js"
+    "./constants": {
+      "types": "./constants.d.ts",
+      "import": "./esm/constants.js",
+      "default": "./constants.js"
+    },
+    "./csprng": {
+      "types": "./csprng.d.ts",
+      "node": {
+        "import": "./esm/csprng.node.js",
+        "require": "./csprng.node.js"
+      },
+      "import": "./esm/csprng.js",
+      "require": "./csprng.js"
     },
     "./random": {
       "types": "./random.d.ts",
-      "node": {
-        "import": "./esm/random.node.js",
-        "require": "./random.node.js"
-      },
       "import": "./esm/random.js",
-      "require": "./random.js"
+      "default": "./random.js"
     }
   },
   "scripts": {
