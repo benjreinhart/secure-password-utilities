@@ -1,6 +1,6 @@
 {
   "name": "secure-password-utilities",
-  "version": "0.0.1-beta.11",
+  "version": "0.1.0",
   "description": "Secure, zero-dependency utilities for generating passwords, pins, and more",
   "keywords": [
     "password",
