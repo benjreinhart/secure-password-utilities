@@ -1,14 +1,10 @@
-import { getRandomValues } from 'secure-password-utilities/crypto';
-
-export const DIGIT_CHARSET = '0123456789';
-export const LOWERCASE_CHARSET = 'abcdefghijklmnopqrstuvwxyz';
-export const UPPERCASE_CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-// OWASP password special characters except space and backslash. Has the benefit of evenly dividing 256.
-//
-//     See https://owasp.org/www-community/password-special-characters
-//
-export const SYMBOL_CHARSET = '!"#$%&\'()*+,-./:;<=>?@[]{}^_`|~';
+import { getRandomValues, randomizeCharacters } from 'secure-password-utilities/random';
+import {
+  DIGIT_CHARSET,
+  LOWERCASE_CHARSET,
+  UPPERCASE_CHARSET,
+  SYMBOL_CHARSET,
+} from 'secure-password-utilities/constants';
 
 export type PasswordOptionType =
   // `true` means include [character type], `false` means exclude [character type]
@@ -263,61 +259,4 @@ export function generateCharacters(length: number, charset: string) {
   return getRandomValues(length, charset.length).reduce((characters, i) => {
     return characters + charset[i];
   }, '');
-}
-
-/**
- * Randomize the ordering of the characters in the given string.
- *
- * Uses a CSPRNG for randomness.
- *
- *     randomizeCharacters('randomize me');     // e znmaedimro
- *     randomizeCharacters('randomize me');     // arndimz moee
- *     randomizeCharacters('randomize me');     // ai emdonmrze
- *
- * @param characters A string of characters to randomize.
- * @returns A random ordering of the `characters` argument.
- */
-export function randomizeCharacters(characters: string) {
-  if (typeof characters !== 'string') {
-    throw new Error('Invalid argument: characters argument must be a string');
-  }
-
-  const charactersLength = characters.length;
-
-  if (charactersLength < 2) {
-    return characters;
-  }
-
-  // Get random values within the index range of our input characters.
-  // We will use these values to swap elements from the input.
-  //
-  // NOTE: This can contain duplicates, which is desired (random), but it does
-  // mean that we cannot construct the resulting string solely from these values
-  // as they may contain duplicates and be missing some indices in the input string.
-  //
-  // For example:
-  //
-  //     * Let's say `characters` here is the string "M9bz"
-  //     * `charactersLength` is the number 4
-  //     * We'll then call getRandomValues(4, 4)
-  //     * This might return `UInt8Array([3, 2, 3, 0])`
-  //     * Then we'll iterate over the characters and at each position `i` we'll
-  //       swap `character[i]` with the one at `characters[swapIndices[i]]`.
-  //
-  const swapIndices = getRandomValues(charactersLength, charactersLength);
-
-  // We start with the input as a list because strings
-  // are immutable and we need to swap elements.
-  const result = Array.from(characters);
-
-  for (let i = 0; i < charactersLength; i++) {
-    const j = swapIndices[i];
-
-    // Swap elements at i and j
-    const temp = result[i];
-    result[i] = result[j];
-    result[j] = temp;
-  }
-
-  return result.join('');
 }

@@ -11,7 +11,8 @@
     "noUnusedLocals": true,
     "baseUrl": ".",
     "paths": {
-      "secure-password-utilities/crypto": ["src/crypto"],
+      "secure-password-utilities/constants": ["src/constants"],
+      "secure-password-utilities/csprng": ["src/csprng"],
       "secure-password-utilities/random": ["src/random"]
     },
   },
