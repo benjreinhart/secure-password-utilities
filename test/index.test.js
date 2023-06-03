@@ -1,10 +1,12 @@
-const { generatePassword, generatePin, generateCharacters } = require('../');
+const { generatePassword, generatePin, generateCharacters, generatePassphrase } = require('../');
 const {
   DIGIT_CHARSET,
   SYMBOL_CHARSET,
   LOWERCASE_CHARSET,
   UPPERCASE_CHARSET,
 } = require('../constants');
+
+const { DEFAULT_WORDLIST } = require('../wordlists');
 
 function containsAtLeast(value, charset, n) {
   if (n < 1 || n > value.length) {
@@ -457,6 +459,59 @@ describe('secure-password-utilities', () => {
         expect(str).toHaveLength(i);
         expect(str).toMatch(/^[&1#@45;BC]+$/);
       }
+    });
+  });
+
+  describe('generatePassphrase', () => {
+    it('rejects invalid length argument', () => {
+      expect(() => generatePassphrase(-1, DEFAULT_WORDLIST)).toThrowError(
+        'Invalid argument: length argument must be a number greater than or equal to 1'
+      );
+
+      expect(() => generatePassphrase(0, DEFAULT_WORDLIST)).toThrowError(
+        'Invalid argument: length argument must be a number greater than or equal to 1'
+      );
+
+      expect(() => generatePassphrase('5', DEFAULT_WORDLIST)).toThrowError(
+        'Invalid argument: length argument must be a number greater than or equal to 1'
+      );
+    });
+
+    it('rejects invalid wordlist argument', () => {
+      expect(() => generatePassphrase(6, 'word1-word2')).toThrowError(
+        'Invalid argument: wordlist argument must be an array with length greater than or equal to 2'
+      );
+
+      expect(() => generatePassphrase(6, [])).toThrowError(
+        'Invalid argument: wordlist argument must be an array with length greater than or equal to 2'
+      );
+
+      expect(() => generatePassphrase(6, ['word'])).toThrowError(
+        'Invalid argument: wordlist argument must be an array with length greater than or equal to 2'
+      );
+    });
+
+    it('rejects invalid sep argument', () => {
+      expect(() => generatePassphrase(6, DEFAULT_WORDLIST, null)).toThrowError(
+        'Invalid argument: sep argument must be a string'
+      );
+    });
+
+    it('can generate a random passphrase', () => {
+      for (let i = 0; i < 20; i++) {
+        const passphrase = generatePassphrase(6, DEFAULT_WORDLIST);
+        const words = passphrase.split('-');
+        expect(words).toHaveLength(6);
+        expect(words.every((w) => DEFAULT_WORDLIST.includes(w))).toEqual(true);
+      }
+    });
+
+    it('can generate a random passphrase with a custom separator', () => {
+      const passphrase = generatePassphrase(6, DEFAULT_WORDLIST, '_');
+      expect(passphrase).not.toContain('-');
+      const words = passphrase.split('_');
+      expect(words).toHaveLength(6);
+      expect(words.every((w) => DEFAULT_WORDLIST.includes(w))).toEqual(true);
     });
   });
 });

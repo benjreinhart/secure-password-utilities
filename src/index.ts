@@ -1,4 +1,8 @@
-import { getRandomValues, randomizeCharacters } from 'secure-password-utilities/random';
+import {
+  getRandomValues,
+  getRandomNumbersInRange,
+  randomizeCharacters,
+} from 'secure-password-utilities/random';
 import {
   DIGIT_CHARSET,
   LOWERCASE_CHARSET,
@@ -30,7 +34,7 @@ export type PasswordOptionsType = {
 /**
  * Generate a random password.
  *
- * Uses a CSPRNG for randomness.
+ * Examples:
  *
  *     generatePassword(12); // l[Nz8UfU.o4g
  *     generatePassword(8, { symbols: false, digits: 2 }); // k9WTkaP6
@@ -212,7 +216,7 @@ function validateCharsetOption(name: string, charset: string) {
 /**
  * Generate a random digit pin.
  *
- * Uses a CSPRNG for randomness.
+ * Examples:
  *
  *     generatePin(6); // 036919
  *     generatePin(8); // 45958396
@@ -233,7 +237,7 @@ export function generatePin(length: number) {
 /**
  * Generate a string of `length` characters chosen randomly from the given `charset`.
  *
- * Uses a CSPRNG for randomness.
+ * Examples:
  *
  *     generateCharacters(4, '$%^&');                          // &$&^
  *     generateCharacters(6, '0123456789');                    // 947682
@@ -258,5 +262,46 @@ export function generateCharacters(length: number, charset: string) {
 
   return getRandomValues(length, charset.length).reduce((characters, i) => {
     return characters + charset[i];
+  }, '');
+}
+
+/**
+ * Generate a memorable passphrase comprised of words chosen randomly from the given `wordlist`.
+ *
+ * There are wordlists available in the wordlists module, or you can provide your own.
+ *
+ * The word separator defaults to a dash (`-`), but you can customize this behavior using the third argument. "-"
+ *
+ * Examples:
+ *
+ *     generatePassphrase(6, DEFAULT_WORDLIST); // canopener-uncanny-hatchet-murky-agony-traitor
+ *     generatePassphrase(6, DEFAULT_WORDLIST); // backpack-craftwork-sweat-postcard-imaging-litter
+ *     generatePassphrase(6, DEFAULT_WORDLIST, '_'); // goldfish_scorpion_antiviral_pursuit_demanding_motto
+ *
+ * @param length The number of words selected at random.
+ * @param wordlist The list of words to sample from.
+ * @param sep The separator to use when joining the words in the passphrase. Defaults to '-'.
+ * @returns A memorable passphrase.
+ */
+export function generatePassphrase(length: number, wordlist: readonly string[], sep = '-') {
+  if (typeof length !== 'number' || length < 1) {
+    throw new Error(
+      'Invalid argument: length argument must be a number greater than or equal to 1'
+    );
+  }
+
+  if (!Array.isArray(wordlist) || wordlist.length < 2) {
+    throw new Error(
+      'Invalid argument: wordlist argument must be an array with length greater than or equal to 2'
+    );
+  }
+
+  if (typeof sep !== 'string') {
+    throw new Error('Invalid argument: sep argument must be a string');
+  }
+
+  return getRandomNumbersInRange(length, 0, wordlist.length).reduce((passphrase, value, i) => {
+    const word = wordlist[value];
+    return passphrase + (i === 0 ? word : sep + word);
   }, '');
 }
