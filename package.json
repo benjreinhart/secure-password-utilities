@@ -49,6 +49,11 @@
       "types": "./random.d.ts",
       "import": "./esm/random.js",
       "default": "./random.js"
+    },
+    "./wordlists": {
+      "types": "./wordlists.d.ts",
+      "import": "./esm/wordlists.js",
+      "default": "./wordlists.js"
     }
   },
   "scripts": {
