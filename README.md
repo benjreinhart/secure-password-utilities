@@ -1,4 +1,4 @@
-# secure-password-utilities ![Github CI](https://github.com/benjreinhart/secure-password-utilities/workflows/Github%20CI/badge.svg)
+# secure-password-utilities ![Github CI](https://github.com/benjreinhart/secure-password-utilities/workflows/Github%20CI/badge.svg) ![NPM Downloads](https://img.shields.io/npm/dm/secure-password-utilities)
 
 Secure, zero-dependency utilities for generating passwords, passphrases, pins, and more.
 
